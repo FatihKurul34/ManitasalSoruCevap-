@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="tr">
+	<head>
+		<meta charset="UTF-8" />
+		<title>Manitasal Sorular</title>
+		<style>
+			body {
+			font-family: Arial, sans-serif;
+			text-align: center;
+			padding: 40px;
+			background-color: #fff8f4;
+			}
+
+			h1 {
+			font-size: 36px;
+			color: #d62828;
+			}
+
+			.question {
+			font-size: 24px;
+			margin: 20px 0;
+			}
+
+			.answers button {
+			font-size: 18px;
+			margin: 10px;
+			padding: 10px 20px;
+			cursor: pointer;
+			}
+
+			.image-result {
+			margin-top: 20px;
+			}
+
+			.image-result img {
+			max-width: 300px;
+			margin-top: 10px;
+			}
+
+			.next-button {
+			margin-top: 20px;
+			padding: 10px 20px;
+			font-size: 18px;
+			display: inline-block;
+			}
+
+			#heartContainer {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			pointer-events: none;
+			z-index: 1000;
+			}
+
+			.heart {
+			position: absolute;
+			width: 30px;
+			height: 30px;
+			background-image: url('https://cdn-icons-png.flaticon.com/512/833/833472.png');
+			background-size: cover;
+			animation: fall 3s linear infinite;
+			}
+
+			@keyframes fall {
+			0% { transform: translateY(-50px); opacity: 1; }
+			100% { transform: translateY(100vh); opacity: 0; }
+			}
+		</style>
+	</head>
+	<body>
+
+		<h1>Manitasal Sorular</h1>
+
+		<div id="quiz-container"></div>
+
+		<script>
+			let currentQuestion = 0;
+
+			const questions = [
+			{
+			text: "Daha önce Maydonoz Döner'den yemek yediniz mi?",
+			options: ["Evet", "Hayır"],
+			responses: [
+			{ img: "maydonoz.jpg", text: "BİLİYODUM ZATEEENN" },
+			{ img: "maydonoz.jpg", text: "DELİLLER ELİMDE!!" }
+			]
+			},
+			{
+			text: "Manitan uyurken horluyor mu?",
+			options: ["Evet", "Hayır"],
+			responses: [
+			{ img: "garip.jpg", text: "SIKTIN YİNE YALANI" },
+			{ img: "harika.jpg", text: "Evet horlamaz çünkü yanında inanılmaz mutlu ve huzurlu bir şekilde uyuyor..." }
+			]
+			},
+			{
+			text: "NE ZAMAN EVLENİYORUZ ??",
+			options: ["BU YAZ", "SENEYE", "ALLAH KERİM"],
+			special: true
+			}
+			];
+
+			const container = document.getElementById("quiz-container");
+
+			function showQuestion(index) {
+			container.innerHTML = "";
+
+			const q = questions[index];
+
+			const questionEl = document.createElement("div");
+			questionEl.className = "question";
+			questionEl.innerText = q.text;
+			container.appendChild(questionEl);
+
+			const answersDiv = document.createElement("div");
+			answersDiv.className = "answers";
+
+			q.options.forEach((option, i) => {
+			const btn = document.createElement("button");
+			btn.innerText = option;
+
+			if (q.special) {
+			if (option === "BU YAZ" || option === "SENEYE") {
+			btn.onmouseover = () => {
+			btn.style.position = "absolute";
+			btn.style.left = Math.random() * 80 + "%";
+			btn.style.top = Math.random() * 80 + "%";
+			};
+			} else {
+			btn.onclick = () => {
+			container.innerHTML = "";
+
+			const finalMessage = document.createElement("div");
+			finalMessage.className = "question";
+			finalMessage.innerText = "SEVİYORUM SENİ YARİMM ❤️";
+			container.appendChild(finalMessage);
+
+			createHearts();
+			};
+			}
+			} else {
+			btn.onclick = () => {
+			const response = q.responses[i];
+			showResponse(response.img, response.text);
+			};
+			}
+
+			answersDiv.appendChild(btn);
+			});
+
+			container.appendChild(answersDiv);
+			}
+
+			function showResponse(image, text) {
+			container.innerHTML = "";
+
+			const resultDiv = document.createElement("div");
+			resultDiv.className = "image-result";
+
+			const img = document.createElement("img");
+			img.src = image;
+			img.alt = "sonuç görseli";
+
+			const textDiv = document.createElement("div");
+			textDiv.className = "question";
+			textDiv.innerText = text;
+
+			const nextBtn = document.createElement("button");
+			nextBtn.className = "next-button";
+			nextBtn.innerText = "Devam Et";
+			nextBtn.onclick = nextQuestion;
+
+			resultDiv.appendChild(img);
+			resultDiv.appendChild(textDiv);
+			resultDiv.appendChild(nextBtn);
+
+			container.appendChild(resultDiv);
+			}
+
+			function nextQuestion() {
+			currentQuestion++;
+			if (currentQuestion < questions.length) {
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function createHearts() {
+            const heartContainer = document.createElement("div");
+            heartContainer.id = "heartContainer";
+            document.body.appendChild(heartContainer);
+
+            for (let i = 0; i < 50; i++) {
+                const heart = document.createElement("div");
+                heart.className = "heart";
+                heart.style.left = Math.random() * 100 + "vw";
+                heart.style.animationDelay = Math.random() * 3 + "s";
+                heartContainer.appendChild(heart);
+            }
+        }
+
+        showQuestion(currentQuestion);
+		</script>
+
+	</body>
+</html>
