@@ -10,6 +10,7 @@
             background-color: #fff0f5;
             margin: 0;
             padding: 20px;
+            overflow-x: hidden;
         }
 
         h1 {
@@ -60,6 +61,39 @@
             border-radius: 10px;
             border: 2px solid #b30000;
         }
+
+        .celebration {
+            position: fixed;
+            width: 20px;
+            height: 20px;
+            z-index: 1000;
+            background-size: contain;
+            background-repeat: no-repeat;
+            animation: float 4s linear infinite;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100vh);
+                opacity: 0;
+            }
+        }
+
+        #retry {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 18px;
+            background-color: #ff4d4d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -68,15 +102,18 @@
     <div id="counter">Kalan: 20</div>
     <div id="grid"></div>
     <div id="message"></div>
+    <button id="retry" onclick="location.reload()">Tekrar Et</button>
 
     <script>
         const grid = document.getElementById("grid");
         const message = document.getElementById("message");
         const counterEl = document.getElementById("counter");
+        const retryBtn = document.getElementById("retry");
 
         let remaining = 20;
+        let clicked = 0;
+        let poisonedFound = false;
 
-        // Zehirli kalbi rastgele belirle
         const poisonIndex = Math.floor(Math.random() * 20);
 
         for (let i = 0; i < 20; i++) {
@@ -85,22 +122,43 @@
             heart.dataset.index = i;
 
             heart.onclick = function () {
-                // Aynı kalbe tekrar tıklanmasın
-                if (heart.classList.contains("clicked")) return;
+                if (heart.classList.contains("clicked") || poisonedFound) return;
 
                 heart.classList.add("clicked");
+                clicked++;
                 remaining--;
                 counterEl.innerText = "Kalan: " + remaining;
 
                 if (parseInt(heart.dataset.index) === poisonIndex) {
+                    poisonedFound = true;
                     document.querySelectorAll(".heart").forEach(h => h.classList.add("falling"));
                     message.innerText = "YANDIN GÜLÜMM 💔";
+                    retryBtn.style.display = "inline-block";
                 } else {
                     heart.style.filter = "grayscale(100%)";
+
+                    // Eğer 19 kalp tıklanmış ve zehirli hâlâ bulunmamışsa
+                    if (clicked === 19) {
+                        message.innerText = "BENİM MANİTA ECİNNİ ✨💖";
+                        triggerCelebration();
+                    }
                 }
             };
 
             grid.appendChild(heart);
+        }
+
+        function triggerCelebration() {
+            for (let i = 0; i < 100; i++) {
+                const shape = document.createElement("div");
+                shape.className = "celebration";
+                shape.style.left = Math.random() * 100 + "vw";
+                shape.style.top = "100vh";
+                shape.style.backgroundImage = Math.random() > 0.5
+                    ? "url('https://cdn-icons-png.flaticon.com/512/833/833472.png')"
+                    : "url('https://cdn-icons-png.flaticon.com/512/616/616408.png')";
+                document.body.appendChild(shape);
+            }
         }
     </script>
 
